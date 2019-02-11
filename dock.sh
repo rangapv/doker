@@ -3,8 +3,8 @@ li=$(uname -s)
 li2="${li,,}"
 
 u1=$(cat /etc/*-release | grep ubuntu)
-f1=$(cat /etc/*-release | grep fedora)
-c1=$(cat /etc/*-release | grep centos)
+f1=$(cat /etc/*-release | grep ID= | grep fedora)
+c1=$(cat /etc/*-release | grep ID= | grep centos)
 s1=$(cat /etc/*-release | grep suse)
 
 
