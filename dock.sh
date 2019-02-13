@@ -65,6 +65,7 @@ then
 	sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 	sudo yum-config-manager --add-repo https://download.docker.com/$li2/$ki/docker-ce.repo
         sudo yum -y install docker-ce 
+        sudo yum install -y epel-release
         sudo yum install -yqq python-pip
         sudo pip install docker-compose
         cm1="yum -y"
@@ -74,5 +75,5 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 sudo systemctl enable docker
 sudo $cm1 update
-docker version
-docker-compose version
+docker --version
+docker-compose --version
