@@ -39,8 +39,14 @@ then
 	sudo chmod 777 /etc/apt/sources.list.d/docker.list
 
 	sudo $cm1 update
-	sudo $cm1  install -yqq docker-ce --allow-unauthenticated
-        sudo apt-get install -yqq python-pip
+   
+        if [ "$mi2" == "bionic" ]
+	then
+	     	sudo snap install docker
+	else
+	sudo $cm1 install -yqq docker-ce --allow-unauthenticated
+        fi
+	sudo apt-get install -yqq python-pip
         sudo pip install docker-compose
 fi
 
