@@ -6,7 +6,39 @@ u1=$(cat /etc/*-release | grep ubuntu)
 f1=$(cat /etc/*-release | grep ID= | grep fedora)
 c1=$(cat /etc/*-release | grep ID= | grep centos)
 s1=$(cat /etc/*-release | grep suse)
+d1=$(cat /etc/*-release | grep ID= | grep debian)
 
+
+
+if [ ! -z "$d1" ]
+then
+	echo "It is an Debian"
+        cm1="apt-get"
+	cm2="apt-key"
+	sudo $cm1 update
+	sudo $cm1 install -yqq apt-transport-https ca-certificates
+	sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+        	
+	ji=$(cat /etc/*-release | grep '^ID' | awk '{split($0,a,"=");print a[2]}')
+	ki="${ji,,}"
+
+	mi=$(cat /etc/*-release | grep '^VERSION=' | awk '{split($0,a,"(");print a[2]}' | awk '{split($0,b,")");print b[1]}')
+	mi2="${mi,,}"
+
+	if [ -f "/etc/apt/sources.list.d/docker.list" ]
+	then
+        	echo "docker.list found\n"
+		sudo truncate -s 0 /etc/apt/sources.list.d/docker.list
+	else
+        echo "Creating docker.list file in /etc/apt/sources.list.d"
+        sudo touch /etc/apt/sources.list.d/docker.list
+	fi
+	sudo chmod 777 /etc/apt/sources.list.d/docker.list
+	sudo echo "deb https://download.docker.com/$li2/$ki $mi2 stable" >> /etc/apt/sources.list.d/docker.list
+	sudo chmod 777 /etc/apt/sources.list.d/docker.list
+
+	sudo $cm1 update
+fi
 
 if [ ! -z "$u1" ]
 then 
