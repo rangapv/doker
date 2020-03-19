@@ -1,0 +1,6 @@
+PIp install
+If you only want pip then follow thi step:
+
+wget https://bootstrap.pypa.io/get-pip.py -O ./get-pip.py
+ls -lcart
+python3 ./get-pip.py
