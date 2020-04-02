@@ -13,7 +13,7 @@ dk2="$(which docker 2>&1)"
 dc1="$(docker-compose --version 2>&1)"
 dc2="$(which docker-compose 2>&1)"
 
-if [  -z "$dk2" ] || [[ $dk2 =~ ."no". ]]
+if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
     then 
     echo "Docker is NOT INSTALLED"
 		if [ ! -z "$d1" ]
@@ -121,7 +121,16 @@ if [  -z "$dk2" ] || [[ $dk2 =~ ."no". ]]
 		sudo $cm1 update
 		docker --version
 		docker-compose --version
+elif [  -z "$dc1" -a -z "$dc2" ] ||  [[ "$dc1" =~ .*"No".* ]] || [[ "$dc2" =~ .*"No".* ]]
+then
+       echo "installing docker-compose"
+       sudo pip install docker-compose
 else
+    echo "Nothing to install"
+fi
+
     echo "Docker version is: $dk1"
     echo "Docker is installed in: $dk2"
-fi
+    echo "Docker compose version is: $dc1"
+    echo "Docker compose is installed in: $dc2"
+
