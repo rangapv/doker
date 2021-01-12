@@ -82,7 +82,11 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			then
 					sudo snap install docker
 			else
-			sudo $cm1 install -yqq docker-ce --allow-unauthenticated
+      
+	                        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - 
+				sudo apt update
+	
+				sudo $cm1 install -yqq docker-ce --allow-unauthenticated
 				fi
 			sudo apt-get install -yqq python-pip
 				sudo pip install docker-compose
