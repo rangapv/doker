@@ -60,7 +60,9 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			cm2="apt-key"
 			fi
 
-			sudo $cm1 update
+			sudo $cm1 -y update
+			sudo $cm1 -y upgrade
+			sudo $cm1 -y install libffi-dev
 			sudo $cm1 install -yqq apt-transport-https ca-certificates
 			sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 
@@ -78,7 +80,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 
 			sudo $cm1 update
 		
-				if [ "$mi2" == "bionic" ]
+			if [ "$mi2" == "bionic" ]
 			then
 					sudo snap install docker
 			else
@@ -87,8 +89,8 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 				sudo apt update
 	
 				sudo $cm1 install -yqq docker-ce --allow-unauthenticated
-				fi
-			sudo apt-get install -yqq python-pip
+		       fi
+			        sudo apt-get install -yqq python-pip
 				sudo pip install docker-compose
 		fi
 
@@ -132,6 +134,10 @@ then
 else
     echo "Nothing to install"
 fi
+   
+    `sudo groupadd docker`
+    `sudo usermod -aG docker $USER`
+    `sudo chmod 666 /var/run/docker.sock`
 
     echo "Docker version is: $dk1"
     echo "Docker is installed in: $dk2"
