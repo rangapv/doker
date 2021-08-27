@@ -8,10 +8,17 @@ c1=$(cat /etc/*-release | grep ID= | grep centos)
 s1=$(cat /etc/*-release | grep suse)
 d1=$(cat /etc/*-release | grep ID= | grep debian)
 
+
+dokvers() {
+
 dk1="$(docker --version 2>&1)"
 dk2="$(which docker 2>&1)"
 dc1="$(docker-compose --version 2>&1)"
 dc2="$(which docker-compose 2>&1)"
+
+}
+
+dokvers
 
 if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
     then 
@@ -19,7 +26,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 		if [ ! -z "$d1" ]
 		then
 			echo "It is an Debian"
-				cm1="apt-get"
+			cm1="apt-get"
 			cm2="apt-key"
 			sudo $cm1 update
 			sudo $cm1 install -yqq apt-transport-https ca-certificates
@@ -62,48 +69,44 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 
 			sudo $cm1 -y update
 			sudo $cm1 -y upgrade
-			sudo $cm1 -y install libffi-dev
-			sudo $cm1 install -yqq apt-transport-https ca-certificates
-			sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-
+			sudo $cm1 install -yqq apt-transport-https ca-certificates curl gnupg libffi-dev lsb-release
+			#sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+                        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 			if [ -f "/etc/apt/sources.list.d/docker.list" ]
 			then
-					echo "docker.list found\n"
+				echo "docker.list found\n"
 				sudo truncate -s 0 /etc/apt/sources.list.d/docker.list
 			else
 				echo "Creating docker.list file in /etc/apt/sources.list.d"
 				sudo touch /etc/apt/sources.list.d/docker.list
 			fi
 			sudo chmod 777 /etc/apt/sources.list.d/docker.list
-			sudo echo "deb https://download.docker.com/$li2/$ki $mi2 stable" >> /etc/apt/sources.list.d/docker.list
-			sudo chmod 777 /etc/apt/sources.list.d/docker.list
-
+		#	sudo echo "deb https://download.docker.com/$li2/$ki $mi2 stable" >> /etc/apt/sources.list.d/docker.list
+	                sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >> /etc/apt/sources.list.d/docker.list 
 			sudo $cm1 update
 		
 			if [ "$mi2" == "bionic" ]
 			then
-					sudo snap install docker
-			else
-      
-	                        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - 
-				sudo apt update
-	
-				sudo $cm1 install -yqq docker-ce --allow-unauthenticated
-		       fi
-			        sudo apt-get install -yqq python-pip
-				sudo pip install docker-compose
-		fi
+				#	sudo snap install docker
+				#sudo $cm1 install -yqq docker-ce --allow-unauthenticated
+				#sudo apt install docker.io
+				echo ""
+		        fi
 
+			 sudo $cm1 -y install docker-ce docker-ce-cli containerd.io        
+			 sudo $cm1 -y install -yqq python-pip
+		         sudo pip install docker-compose
+		fi
 
 		if [ ! -z "$f1" ]
 		then
 				ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"=");print a[2]}')
 				ki="${ji,,}"
-				sudo dnf -y install dnf-plugins-core
-				sudo dnf config-manager --add-repo https://download.docker.com/$li2/$ki/docker-ce.repo
-				sudo dnf -y install docker-ce --releasever=28
-			cm1="dnf -y"
-				sudo dnf install -yqq python-pip
+          			cm1="dnf -y"
+				sudo $cm1 install dnf-plugins-core
+				sudo $cm1 config-manager --add-repo https://download.docker.com/$li2/$ki/docker-ce.repo
+				sudo $cm1 install docker-ce --releasever=28
+				sudo $cm1 install -yqq python-pip
 				sudo pip install docker-compose
 		fi #end of fedora
 
@@ -112,21 +115,15 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			echo "it is a centos"
 				ji=$(cat /etc/*-release | grep '^ID=' |awk '{split($0,a,"\"");print a[2]}')
 				ki="${ji,,}"
-			sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-			sudo yum-config-manager --add-repo https://download.docker.com/$li2/$ki/docker-ce.repo
-				sudo yum -y install docker-ce 
-				sudo yum install -y epel-release
-				sudo yum install -yqq python-pip
-				sudo pip install docker-compose
 				cm1="yum -y"
+          			sudo $cm1 install yum-utils device-mapper-persistent-data lvm2
+	        		sudo yum-config-manager --add-repo https://download.docker.com/$li2/$ki/docker-ce.repo
+				sudo $cm1 install docker-ce 
+				sudo $cm1 install epel-release
+				sudo $cm1 install -yqq python-pip
+				sudo pip install docker-compose
 		fi #end of centos
 
-		sudo groupadd docker
-		sudo usermod -aG docker $USER
-		sudo systemctl enable docker
-		sudo $cm1 update
-		docker --version
-		docker-compose --version
 elif [  -z "$dc1" -a -z "$dc2" ] ||  [[ "$dc1" =~ .*"No".* ]] || [[ "$dc2" =~ .*"No".* ]]
 then
        echo "installing docker-compose"
@@ -138,6 +135,10 @@ fi
     `sudo groupadd docker`
     `sudo usermod -aG docker $USER`
     `sudo chmod 666 /var/run/docker.sock`
+    `sudo systemctl enable docker`
+    `sudo $cm1 update`
+
+    dokvers
 
     echo "Docker version is: $dk1"
     echo "Docker is installed in: $dk2"
