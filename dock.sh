@@ -18,6 +18,13 @@ dc2="$(which docker-compose 2>&1)"
 
 }
 
+dokcomp() {
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+}
+
 dokvers
 
 if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
@@ -94,8 +101,8 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 		        fi
 
 			 sudo $cm1 -y install docker-ce docker-ce-cli containerd.io        
-			 sudo $cm1 -y install -yqq python-pip
-		         sudo pip install docker-compose
+		         #sudo pip install docker-compose
+		         dokcomp
 		fi
 
 		if [ ! -z "$f1" ]
@@ -127,7 +134,8 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 elif [  -z "$dc1" -a -z "$dc2" ] ||  [[ "$dc1" =~ .*"No".* ]] || [[ "$dc2" =~ .*"No".* ]]
 then
        echo "installing docker-compose"
-       sudo pip install docker-compose
+       #sudo pip install docker-compose
+       dokcomp
 else
     echo "Nothing to install"
 fi
