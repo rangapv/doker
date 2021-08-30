@@ -1,4 +1,7 @@
 #! /bin/bash
+
+source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
+
 li=$(uname -s)
 li2="${li,,}"
 
