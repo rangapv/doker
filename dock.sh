@@ -25,6 +25,24 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 }
 
+dokenable() {
+ sudo mkdir /etc/docker
+ cat <<EOF | sudo tee /etc/docker/daemon.json
+ {
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+ }
+EOF
+ sudo systemctl enable docker
+ sudo systemctl daemon-reload
+ sudo systemctl restart docker
+
+}
+
 dokvers
 
 if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
@@ -102,7 +120,8 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 
 			 sudo $cm1 -y install docker-ce docker-ce-cli containerd.io        
 		         #sudo pip install docker-compose
-		         dokcomp
+		         dokenable
+		      	 dokcomp
 		fi
 
 		if [ ! -z "$f1" ]
