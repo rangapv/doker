@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/bash
 
 source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
 
@@ -16,8 +16,26 @@ dokvers() {
 
 dk1="$(docker --version 2>&1)"
 dk2="$(which docker 2>&1)"
+dk2s="$?"
 dc1="$(docker-compose --version 2>&1)"
 dc2="$(which docker-compose 2>&1)"
+dc2s="$?"
+}
+
+
+dokstatus() {
+
+dokvers
+
+if [[ ( $dk2s != "0"  ) ]]
+then
+   echo "Docker is not installed"
+fi
+
+if [[ ( $dc2s != "0"  ) ]]
+then
+	echo "Docker compose is not installed"
+fi
 
 }
 
@@ -45,6 +63,15 @@ EOF
  sudo systemctl restart docker
 
 }
+
+
+
+if [[ ( $1 = "status" ) ]]
+then
+dokstatus
+exit
+fi
+
 
 dokvers
 
@@ -109,9 +136,21 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 				sudo touch /etc/apt/sources.list.d/docker.list
 			fi
 			sudo chmod 777 /etc/apt/sources.list.d/docker.list
-		#	sudo echo "deb https://download.docker.com/$li2/$ki $mi2 stable" >> /etc/apt/sources.list.d/docker.list
-	                sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >> /etc/apt/sources.list.d/docker.list 
-			sudo $cm1 update
+
+
+			if [ ! -f "/etc/apt/keyings" ]
+                        then
+                            echo "keyrings found\n"
+			else       
+				echo "Keyrings not found\n"
+			sudo install -m 0755 -d /etc/apt/keyrings
+                        fi 
+
+			curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+			sudo chmod a+r /etc/apt/keyrings/docker.gpg
+			
+                        sudo echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" >> /etc/apt/sources.list.d/docker.list
+			sudo $cm1 -y update
 		
 			if [ "$mi2" == "bionic" ]
 			then
@@ -122,7 +161,6 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 		        fi
 
 			 sudo $cm1 -y install docker-ce docker-ce-cli containerd.io        
-		         #sudo pip install docker-compose
 		         dokenable
 		      	 dokcomp
 		fi
