@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /usr/bin/env bash
 
 source <(curl -s https://raw.githubusercontent.com/rangapv/bash-source/main/s1.sh) >>/dev/null 2>&1
 
@@ -41,7 +41,19 @@ fi
 
 dokcomp() {
 
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+dcver="v2.29.2"
+echo "The current version of docker compose to be installed is $dcver, check the website https://github.com/docker/compose/releases to confirm the release version or press enter"
+read rever
+
+if [[ $rever = "" ]]
+then
+	dcver=$rever
+        #echo "inside dcver $dcver"
+        #exit
+fi
+
+sudo curl -L "https://github.com/docker/compose/releases/download/${dcver}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
 }
@@ -74,6 +86,8 @@ fi
 
 
 dokvers
+
+
 
 if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
     then 
@@ -114,6 +128,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			mi2="${mi,,}"
 			ji=$(cat /etc/*-release | grep DISTRIB_ID | awk '{split($0,a,"=");print a[2]}')
 			ki="${ji,,}"
+                        vername=`cat /etc/os-release | grep VERSION_CODENAME | awk '{split($0,a,"="); print a[2]}'`
 
 			if [ "$ki" == "ubuntu" ]
 			then
@@ -126,7 +141,21 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			sudo $cm1 -y upgrade
 			sudo $cm1 install -yqq apt-transport-https ca-certificates curl gnupg libffi-dev lsb-release
 			#sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-                        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                        #sudo curl -fsSL https://download.docker.com/linux/$ki/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+			if [ ! -f "/etc/apt/keyings" ]
+                        then
+                            echo "keyrings found\n"
+			else       
+				echo "Keyrings not found\n"
+			sudo install -m 0755 -d /etc/apt/keyrings
+                        fi 
+
+	                sudo curl -fsSL https://download.docker.com/linux/$ki/gpg -o /etc/apt/keyrings/docker.asc
+		        sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+			#sudo curl -fsSL https://download.docker.com/linux/ubuntu/dists/$mi2/pool/stable/amd64
+	
 			if [ -f "/etc/apt/sources.list.d/docker.list" ]
 			then
 				echo "docker.list found\n"
@@ -138,18 +167,10 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			sudo chmod 777 /etc/apt/sources.list.d/docker.list
 
 
-			if [ ! -f "/etc/apt/keyings" ]
-                        then
-                            echo "keyrings found\n"
-			else       
-				echo "Keyrings not found\n"
-			sudo install -m 0755 -d /etc/apt/keyrings
-                        fi 
-
-			curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-			sudo chmod a+r /etc/apt/keyrings/docker.gpg
+			#curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	        	#sudo chmod a+r /etc/apt/keyrings/docker.gpg
 			
-                        sudo echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" >> /etc/apt/sources.list.d/docker.list
+                        sudo echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ki $vername stable" >> /etc/apt/sources.list.d/docker.list
 			sudo $cm1 -y update
 		
 			if [ "$mi2" == "bionic" ]
