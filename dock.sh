@@ -170,7 +170,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			#curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 	        	#sudo chmod a+r /etc/apt/keyrings/docker.gpg
 			
-                        sudo echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ki $vername stable" >> /etc/apt/sources.list.d/docker.list
+                        sudo echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$ki $vername stable" >> /etc/apt/sources.list.d/docker.list
 			sudo $cm1 -y update
 		
 			if [ "$mi2" == "bionic" ]
@@ -179,9 +179,11 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 				#sudo $cm1 install -yqq docker-ce --allow-unauthenticated
 				#sudo apt install docker.io
 				echo ""
-		        fi
-
-			 sudo $cm1 -y install docker-ce docker-ce-cli containerd.io        
+	                 fi
+         		 verison1="18.03.1~ce~3-0~ubuntu_amd64.deb" 
+         		 verison2="18.09.0~3-0~ubuntu-bionic_amd64.deb " 
+         		 verison3="18.03.1~ce~3-0~ubuntu_amd64.deb" 
+			 sudo $cm1 -y install docker-ce${version1} docker-ce-cli${version2} containerd.io        
 		         dokenable
 		      	 dokcomp
 		fi
