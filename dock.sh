@@ -128,8 +128,8 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			mi2="${mi,,}"
 			ji=$(cat /etc/*-release | grep DISTRIB_ID | awk '{split($0,a,"=");print a[2]}')
 			ki="${ji,,}"
-                        vername=`cat /etc/os-release | grep VERSION_CODENAME | awk '{split($0,a,"="); print a[2]}'`
-
+                        vername=`cat /etc/*-release | grep VERSION_CODENAME | awk '{split($0,a,"="); print a[2]}'`
+                        verid=`cat /etc/*-release | grep DISTRIB_RELEASE | awk '{split($0,a,"="); print a[2]}'`
 			if [ "$ki" == "ubuntu" ]
 			then
 			echo "IT IS UBUNTU"
@@ -180,12 +180,34 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 				#sudo apt install docker.io
 				echo ""
 	                 fi
-         		 verison1="18.03.1~ce~3-0~ubuntu_amd64.deb" 
-         		 verison2="18.09.0~3-0~ubuntu-bionic_amd64.deb " 
-         		 verison3="18.03.1~ce~3-0~ubuntu_amd64.deb" 
-			 sudo $cm1 -y install docker-ce${version1} docker-ce-cli${version2} containerd.io        
+
+			 #vercli=" docker-ce-cli_27.2.0-1~ubuntu.24.04~noble_amd64.deb
+			 #vercli="docker-ce-cli_24.0.2-1~${ki}.${verid}~${vername}_amd64.deb"
+
+                      
+                         vercli1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
+		      	 vercli="docker-ce-cli=${vercli1}"
+
+
+			 #docker-ce_27.2.0-1~ubuntu.24.04~noble_amd64.deb 
+			 verce1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
+			 verce="docker-ce=${verce1}"
+
+                         #docker-compose-plugin_2.29.2-1~ubuntu.24.04~noble_amd64.deb  
+                         vercomp1=`sudo apt-cache madison docker-compose-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs `
+	      		 vercomp="docker-compose-plugin=${vercomp1}"
+                         
+			 vercon1=`sudo apt-cache madison containerd.io | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs `
+			 vercon="containerd.io=${vercon1}"
+
+
+                         dokbuild=`sudo apt-cache madison docker-buildx-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}'  | xargs`
+                         dockerbuild="docker-buildx-plugin=${dokbuild}"
+
+			 #sudo $cm1 -y install docker-ce${version1} docker-ce-cli${version2} containerd.io        
+			 sudo $cm1 -y install $dockerbuild  $vercon $vercomp       
 		         dokenable
-		      	 dokcomp
+		      	 #dokcomp
 		fi
 
 		if [ ! -z "$f1" ]
