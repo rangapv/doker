@@ -73,6 +73,7 @@ EOF
  sudo systemctl enable docker
  sudo systemctl daemon-reload
  sudo systemctl restart docker
+ sudo systemctl enable containerd
 
 }
 
@@ -185,19 +186,19 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			 #vercli="docker-ce-cli_24.0.2-1~${ki}.${verid}~${vername}_amd64.deb"
 
                       
-                         vercli1=`sudo apt-cache madison docker-ce-cli | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
+                         vercli1=`sudo apt-cache madison docker-ce-cli | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 		      	 vercli="docker-ce-cli=${vercli1}"
 
 
 			 #docker-ce_27.2.0-1~ubuntu.24.04~noble_amd64.deb 
-			 verce1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
+			 verce1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 			 verce="docker-ce=${verce1}"
 
                          #docker-compose-plugin_2.29.2-1~ubuntu.24.04~noble_amd64.deb  
-                         vercomp1=`sudo apt-cache madison docker-compose-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs `
+                         vercomp1=`sudo apt-cache madison docker-compose-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 	      		 vercomp="docker-compose-plugin=${vercomp1}"
                          
-			 vercon1=`sudo apt-cache madison containerd.io | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs `
+			 vercon1=`sudo apt-cache madison containerd.io | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 			 vercon="containerd.io=${vercon1}"
 
 
@@ -205,7 +206,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
                          dockerbuild="docker-buildx-plugin=${dokbuild}"
 
 			 #sudo $cm1 -y install docker-ce${version1} docker-ce-cli${version2} containerd.io        
-			 sudo $cm1 -y install $dockerbuild  $vercon $vercomp       
+			 sudo $cm1 -y install $verce $vercli $dockerbuild  $vercon $vercomp       
 		         dokenable
 		      	 #dokcomp
 		fi
