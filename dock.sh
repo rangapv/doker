@@ -185,7 +185,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 			 #vercli="docker-ce-cli_24.0.2-1~${ki}.${verid}~${vername}_amd64.deb"
 
                       
-                         vercli1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
+                         vercli1=`sudo apt-cache madison docker-ce-cli | head -1 | awk '{ split($0,a,"|"); print a[2]}' | awk '{ split($0,a,":"); print a[2]}' | xargs`
 		      	 vercli="docker-ce-cli=${vercli1}"
 
 
