@@ -17,8 +17,8 @@ dokvers() {
 dk1="$(docker --version 2>&1)"
 dk2="$(which docker 2>&1)"
 dk2s="$?"
-dc1="$(docker-compose --version 2>&1)"
-dc2="$(which docker-compose 2>&1)"
+dc1="$(docker compose version 2>&1)"
+dc2="$(which docker compose 2>&1)"
 dc2s="$?"
 }
 
@@ -140,7 +140,7 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
 
 			sudo $cm1 -y update
 			sudo $cm1 -y upgrade
-			sudo $cm1 install -yqq apt-transport-https ca-certificates curl gnupg libffi-dev lsb-release
+			sudo $cm1 install -yqq apt-transport-https ca-certificates curl gnupg libffi-dev lsb-release libmagic1
 			#sudo $cm2 adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
                         #sudo curl -fsSL https://download.docker.com/linux/$ki/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
@@ -188,27 +188,34 @@ if [  -z "$dk2" ] || [[ $dk2 =~ .*"no".* ]]
                       
                          vercli1=`sudo apt-cache madison docker-ce-cli | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 		      	 vercli="docker-ce-cli=${vercli1}"
-
+                         echo "vercli is $vercli and vercli1 is ${vercli1}"      
 
 			 #docker-ce_27.2.0-1~ubuntu.24.04~noble_amd64.deb 
 			 verce1=`sudo apt-cache madison docker-ce | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 			 verce="docker-ce=${verce1}"
+			 echo "verce is ${verce} and verce1 is ${verce1}"
 
                          #docker-compose-plugin_2.29.2-1~ubuntu.24.04~noble_amd64.deb  
                          vercomp1=`sudo apt-cache madison docker-compose-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 	      		 vercomp="docker-compose-plugin=${vercomp1}"
-                         
+                         echo "vercomp is ${vercomp} and vercomp1 is ${vercomp1}"
+
 			 vercon1=`sudo apt-cache madison containerd.io | head -1 | awk '{ split($0,a,"|"); print a[2]}' | xargs`
 			 vercon="containerd.io=${vercon1}"
-
+ 			 echo "vercon is ${vercon} and vercon1 is ${vercon1}"
 
                          dokbuild=`sudo apt-cache madison docker-buildx-plugin | head -1 | awk '{ split($0,a,"|"); print a[2]}'  | xargs`
                          dockerbuild="docker-buildx-plugin=${dokbuild}"
+			 echo "dockerbuild is ${dockerbuild} and dokbuild is ${dokbuild}"
 
 			 #sudo $cm1 -y install docker-ce${version1} docker-ce-cli${version2} containerd.io        
-			 sudo $cm1 -y install $verce $vercli $dockerbuild  $vercon $vercomp       
+			 echo "cmd1 is $cm1"
+			 dokins=`sudo $cm1 -y install ${verce} ${vercli} ${dockerbuild} ${vercon} ${vercomp}`
+		         dokinstalls="$?"
+			 echo "dokinstall is $dokins"
+			 echo "dokinstall status is $dokinstalls"
 		         dokenable
-		      	 #dokcomp
+		      	 dokcomp
 		fi
 
 		if [ ! -z "$f1" ]
